@@ -1,0 +1,6 @@
+/__pycache__
+/.vscode
+/data
+/devenv
+
+config.py
