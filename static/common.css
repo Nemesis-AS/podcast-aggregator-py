@@ -1,0 +1,20 @@
+*, *::before, *::after {
+    box-sizing: border-box;
+    margin: 0;
+    font-family: "Poppins", "Segoe UI", sans-serif;
+}
+
+body {
+    min-height: 100vh;
+}
+
+header {
+    padding: .8rem 2rem;
+    background-color: #0284c7;
+    color: white;
+}
+
+header > .logo {
+    font-size: 1.6rem;
+    font-weight: 600;
+}

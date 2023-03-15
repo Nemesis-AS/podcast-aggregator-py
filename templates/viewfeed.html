@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Feed | Podcast Manager</title>
+
+    <link rel="stylesheet" type="text/css" href="{{url_for("static", filename="common.css")}}" />
+    <link rel="stylesheet" type="text/css" href="{{url_for("static", filename="viewfeed.css")}}" />
+</head>
+<body>
+    <header>
+        <div class="logo">Podcast Manager</div>
+    </header>
+
+    <main>
+        <div class="info-banner">
+            <div class="art">
+                <img class="podcast-artwork" src="https://i1.sndcdn.com/avatars-k6b8SxIVOGlbqBHY-KvQoRg-original.jpg" alt="Game Dev Field Guide" />
+            </div>
+            <div class="info-text">
+                <div class="title">
+                    Game Dev Field Guide
+                </div>
+                <div class="author">
+                    Zackavelli
+                </div>
+                <div class="description">
+                    The Game Dev Field Guide is a podcast series focused on teaching you how to make and launch your own video games. This podcast is aimed at the beginner to intermediate level of game developer. Learn things like how to make crisp movement controls, making eye catching sprites, and marketing your game for it's big release. Stay awhile and listen!
+                </div>
+            </div>
+        </div>
+        <table class="episode-list">
+            <thead>
+                <tr class="ep-head">
+                    <th class="cell">#</th>
+                    <th class="cell">Title</th>
+                    <th class="cell">Air Date</th>
+                    <th class="cell">Status</th>
+                    <th class="cell">Options</th>
+                </tr>
+            </thead>
+            <tbody class="episodes">
+                <tr class="episode">
+                    <td>1</td>
+                    <td>Interview with Carter Anderson (Bevy)</td>
+                    <td>June 05, 2022</td>
+                    <td>Not Downloaded</td>
+                    <td></td>
+                </tr>
+            </tbody>
+        </table>
+    </main>
+
+    <script>
+        window.feedId = "{{feed_id}}";
+    </script>
+    <script src="{{url_for("static", filename="viewfeed.js")}}"></script>
+</body>
+</html>

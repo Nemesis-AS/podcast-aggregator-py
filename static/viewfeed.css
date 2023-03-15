@@ -1,0 +1,45 @@
+main {
+    display: flex;
+    flex-direction: column;
+}
+
+.info-banner {
+    display: grid;
+    grid-template-columns: 30% 70%;
+
+    color: white;
+    background-color: #334155;
+}
+
+.info-banner > .art {
+    padding: 1rem;
+}
+
+.info-banner > .art > .podcast-artwork {
+    max-width: 100%;
+    border-radius: .5em;
+}
+
+.info-banner > .info-text {
+    padding: 1rem;
+}
+
+.info-banner > .info-text > .title {
+    font-size: 1.8rem;
+    font-weight: bold;
+}
+
+.info-banner > .info-text > .author {
+    color: #94a3b8;
+}
+
+table.episode-list {
+    margin: 1rem 2rem;
+    padding: .5rem;
+    background-color: #f5f5f4;
+}
+
+td, th {
+    padding: .2rem .5rem;
+    border-bottom: 1px solid black;
+}
