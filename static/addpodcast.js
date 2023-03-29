@@ -7,7 +7,6 @@ function main() {
     searchForm.addEventListener("submit", async e => {
         e.preventDefault();
         const formData = new FormData(searchForm, submitter);
-        // console.log(formData.get("query"));
 
         const url = new URL("/get-podcast-by-name", window.location.origin);
         url.searchParams.append("query", formData.get("query"));
@@ -19,20 +18,17 @@ function main() {
 }
 
 async function addPodcast(e) {
-    // console.log(e.dataset.podId);
     const url = new URL("/add-podcast", window.location.origin);
     url.searchParams.append("pod_id", e.dataset.podId);
 
     const res = await fetch(url.href);
     const json = await res.json();
-    // console.log(url);
 
     if (!json.status) {
         console.error("An Error Occured while adding the podcast");
     } else {
         console.log("Added Podcast");
     }
-    // console.log("Adding Podcast!");
 }
 
 function renderResults(results) {

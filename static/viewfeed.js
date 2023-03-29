@@ -8,8 +8,6 @@ function renderEpisodes(episodes) {
     const epEl = document.querySelector("tbody.episodes");
     while (epEl.children.length > 0) epEl.children[0].remove();
 
-    // epEl.innerHTML = "";
-
     episodes.forEach((ep, idx) => {
         let row = buildRow(ep, episodes.length - idx);
         epEl.appendChild(row);

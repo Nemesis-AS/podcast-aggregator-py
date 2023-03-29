@@ -22,7 +22,6 @@ main {
     text-align: center;
     box-shadow: 0px 0px 0px 0px #1e1e1e;
     transition: box-shadow 300ms;
-    /* background-color: gray; */
 }
 
 .card > .card-image {

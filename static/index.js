@@ -2,15 +2,10 @@ const mainEl = document.getElementById("main");
 
 window.onload = async () => {
     const feeds = await getFeeds();
-    // console.log(feeds);
 
     feeds.forEach(feed => {
         mainEl.appendChild(createCard(feed));
     });
-
-    // Object.keys(feeds).forEach(key => {
-    //     mainEl.appendChild(createCard(feeds[key]));
-    // });
 }
 
 async function getFeeds() {

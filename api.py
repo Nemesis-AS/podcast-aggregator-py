@@ -15,9 +15,6 @@ class PodcastIndexAPI:
         if not res["status"]:
             print(f"Couldn't find {title}")
             return
-        # print(res)
-        # for idx in range(len(res["feeds"])):
-        #     print(f"{idx + 1}. {res['feeds'][idx]['title']}")
         return res
 
     def get_feed_by_id(self, feed_id: str) -> dict | None:

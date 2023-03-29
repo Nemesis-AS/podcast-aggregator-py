@@ -34,13 +34,11 @@ class Server:
             return ""
 
         @self.server.route("/feeds", methods=["GET"])
-        def feeds(): # @todo
+        def feeds():
             match request.method:
                 case "GET":
                     data = self.app.get_all_podcasts()
                     return jsonify({ "feeds": data })
-                    # feed = file_to_dict("data/feeds.json")
-                    # return jsonify(feed)
             return ""
         
         @self.server.route("/get-podcast-episodes/<int:podcast_id>", methods=["GET"])
@@ -53,12 +51,6 @@ class Server:
             if query is not None:
                 return jsonify(self.app.get_podcasts_by_name(query))
             return jsonify([])
-        
-        # @self.server.route("/test", methods=["GET"])
-        # def test_route():
-        #     pod_id = request.args.get("podid")
-        #     if not pod_id: return jsonify({})
-        #     return jsonify(self.app.fetch_episodes(int(pod_id)))
         
         @self.server.route("/add-podcast", methods=["GET"])
         def add_podcast():
