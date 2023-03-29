@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Podcast | Podcast Manager</title>
+
+    <link rel="stylesheet" type="text/css" href="{{url_for("static", filename="common.css")}}" />
+    <link rel="stylesheet" type="text/css" href="{{url_for("static", filename="addpodcast.css")}}" />
+</head>
+<body>
+    <header>
+        <div class="logo">Podcast Manager</div>
+    </header>
+
+    <section class="navbar">
+        <ul>
+            <li>
+                <a href="/add/new">Add Podcast</a>
+            </li>
+            <li>
+                <a href="/">View Podcasts</a>
+            </li>
+        </ul>
+    </section>
+
+    <main>
+        <div class="title"></div>
+        <form id="searchForm">
+            <input type="text" name="query" placeholder="Podcast Name/ID" />
+            <button type="submit" id="searchSubmitBtn">Search</button>
+        </form>
+        <div class="results">
+            <!-- <div class="res-podcast">
+                <div class="pod-artwork">
+
+                </div>
+                <div class="pod-text">
+                    <div class="pod-title"></div>
+                    <div class="pod-subtext">
+                        <div class="pod-author"></div>
+                        <div class="pod-episodes"></div>
+                    </div>
+                    <div class="pod-desc"></div>
+                    <div class="pod-actions"></div>
+                </div>
+            </div> -->
+        </div>
+    </main>
+
+    <script src="{{url_for("static", filename="addpodcast.js")}}"></script>
+</body>
+</html>

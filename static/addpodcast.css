@@ -1,0 +1,104 @@
+:root {
+    --text-size-form: 1.2rem;
+}
+
+body {
+    max-height: 100vh;
+}
+
+main {
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+}
+
+main > form {
+    padding: 2rem;
+    display: flex;
+    /* gap: .5rem; */
+}
+
+main > form > input {
+    flex-grow: 1;
+    font-size: var(--text-size-form);
+    padding: .2rem .5rem;
+    border: 1px solid #64748b;
+    border-right: none;
+}
+
+main > form > button {
+    font-size: var(--text-size-form);
+}
+
+.results {
+    padding: 1rem .7rem;
+}
+
+.res-podcast {
+    display: grid;
+    grid-template-columns: min(30%, 256px) 70%;
+    gap: .5rem;
+    padding: 1rem 2rem;
+}
+
+.res-podcast > .pod-artwork {
+    width: 100%;
+}
+
+.pod-text {
+    display: flex;
+    flex-direction: column;
+    gap: .5rem;
+}
+
+.pod-main-text {
+    display: flex;
+    gap: .5rem;
+    align-items: center;
+}
+
+.pod-title {
+    font-size: 1.2rem;
+    font-weight: bold;
+}
+
+.pod-link {
+    color: #374151;
+    width: 16px;
+    height: 16px;
+}
+
+.pod-subtext {
+    color: #374151;
+    display: flex;
+    gap: 1rem;
+}
+
+.pod-tags {
+    display: flex;
+    gap: .5rem;
+}
+
+.tag {
+    background-color: #334155;
+    color: white;
+    border-radius: .2rem;
+    padding: .25rem;
+    border-color: #27272a;
+}
+
+.pod-add-btn {
+    padding: .5rem;
+    background-color: #16a34a;
+    color: white;
+    font-weight: 500;
+    font-size: 1.2rem;
+    transition: background-color 300ms;
+    border: 2px solid #166534;
+    border-radius: .2rem;
+    cursor: pointer;
+}
+
+.pod-add-btn:hover {
+    background-color: #166534;
+}

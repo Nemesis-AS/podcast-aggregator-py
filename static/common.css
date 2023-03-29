@@ -6,15 +6,52 @@
 
 body {
     min-height: 100vh;
+    display: grid;
+    grid-template-areas: "header header"
+                         "sidebar main";
+    grid-template-rows: min-content 1fr;   
+    grid-template-columns: min(20%, 200px) auto;
 }
 
 header {
     padding: .8rem 2rem;
     background-color: #0284c7;
     color: white;
+    grid-area: header;
 }
 
 header > .logo {
     font-size: 1.6rem;
     font-weight: 600;
+}
+
+section.navbar {
+    grid-area: sidebar;
+    display: flex;
+    flex-direction: column;
+    background-color: #374151;
+    color: #e0f2fe;
+}
+
+section.navbar > ul {
+    list-style: none;
+    padding: 2rem .5rem;
+}
+
+section.navbar li {
+    padding: .5rem 1rem;
+}
+
+section.navbar a {
+    color: #e0f2fe;
+    text-decoration: none;
+    transition: color 300ms;
+}
+
+section.navbar a:hover {
+    color: #38bdf8;
+}
+
+main {
+    grid-area: main;
 }

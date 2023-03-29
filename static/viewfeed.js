@@ -1,14 +1,14 @@
 async function getEpisodes(feedId) {
     const res = await fetch(`/get-podcast-episodes/${feedId}`);
     const json = await res.json();
-    if (json.length > 0) renderEpisodes(json);
+    renderEpisodes(json);
 }
 
 function renderEpisodes(episodes) {
     const epEl = document.querySelector("tbody.episodes");
-    // epEl.children.forEach(child => child.remove());
+    while (epEl.children.length > 0) epEl.children[0].remove();
 
-    epEl.innerHTML = "";
+    // epEl.innerHTML = "";
 
     episodes.forEach((ep, idx) => {
         let row = buildRow(ep, episodes.length - idx);
@@ -17,14 +17,32 @@ function renderEpisodes(episodes) {
 
 }
 
+function formatDate(timestamp) {
+    const date = new Date(timestamp * 1000);
+
+    return date.toLocaleDateString("en-US", {
+        year: "numeric",
+        month: "short",
+        day: "numeric",
+    });
+}
+
 function buildRow(data, idx) {
     const row = document.createElement("tr");
-    const prop = [idx, data[1], data[4], "Not Downloaded", ""];
+    const prop = [idx, data[1], formatDate(data[4]), "Not Downloaded", ""];
 
     prop.forEach(item => {
         const td = document.createElement("td");
-        const textEl = document.createTextNode(item);
-        td.appendChild(textEl);
+        // @temp
+        if (item === "") {
+            const img = document.createElement("img");
+            img.setAttribute("src", "../static/icons/play.svg");
+            img.setAttribute("style", "color: dodgerblue;");
+            td.appendChild(img);
+        } else {
+            const textEl = document.createTextNode(item);
+            td.appendChild(textEl);
+        }
         row.appendChild(td);
     });
 
@@ -32,6 +50,5 @@ function buildRow(data, idx) {
 }
 
 window.onload = async () => {
-    // console.log(window.feedId);
     getEpisodes(window.feedId);
 }

@@ -2,30 +2,33 @@ const mainEl = document.getElementById("main");
 
 window.onload = async () => {
     const feeds = await getFeeds();
+    // console.log(feeds);
 
-    Object.keys(feeds).forEach(key => {
-        mainEl.appendChild(createCard(feeds[key]));
+    feeds.forEach(feed => {
+        mainEl.appendChild(createCard(feed));
     });
+
+    // Object.keys(feeds).forEach(key => {
+    //     mainEl.appendChild(createCard(feeds[key]));
+    // });
 }
 
 async function getFeeds() {
     const res = await fetch("/feeds");
     const json = await res.json();
-    return json;
+    return json.feeds;
 }
 
 function createCard(podcast) {
     const el = document.createElement("div");
     el.classList.add("card");
     el.innerHTML = `
-        <img class="card-image" src="${podcast.artwork}" alt="${podcast.title}" />
+        <img class="card-image" src="${podcast[5]}" alt="${podcast[1]}" />
         <div class="card-body">
-            <a href="viewfeed/${podcast.id}" class="title">
-                ${podcast.title}
+            <a href="viewfeed/${podcast[0]}" class="title">
+                ${truncateString(podcast[1], 40)}
             </a>
-            <div class="desc">
-                ${truncateString(podcast.description)}
-            </div>
+            
         </div>
     `;
     return el;

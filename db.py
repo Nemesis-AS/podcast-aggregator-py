@@ -11,7 +11,7 @@ class DB:
         if not self.table_exists("podcasts"):
             self.cursor.execute("CREATE TABLE podcasts(id, title, link, desc, author, artwork, last_upload, itunes_id, lang, explicit, ep_count, categories)")
         if not self.table_exists("episodes"):
-            self.cursor.execute("CREATE TABLE episodes(id, title, link, desc, date_pub, duration, explicit, episode, season, artwork, podcast)") # downloaded
+            self.cursor.execute("CREATE TABLE episodes(id, title, link, desc, date_pub, duration, explicit, episode, season, artwork, podcast)") # downloaded, file_path
         if not self.table_exists("images"):
             self.cursor.execute("CREATE TABLE images(url, image)")
 

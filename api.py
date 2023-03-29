@@ -8,15 +8,17 @@ class PodcastIndexAPI:
         self.BASE_URL = "https://api.podcastindex.org/api/1.0/"
 
 
-    def get_podcast_by_title(self, title: str) -> None:
-        res: dict = self.request_builder("/search/bytitle", {
+    def get_podcast_by_title(self, title: str) -> dict | None:
+        res: dict = self.request_builder("/search/byterm", {
             "q": title
         })
         if not res["status"]:
             print(f"Couldn't find {title}")
             return
-        for idx in range(len(res["feeds"])):
-            print(f"{idx + 1}. {res['feeds'][idx]['title']}")
+        # print(res)
+        # for idx in range(len(res["feeds"])):
+        #     print(f"{idx + 1}. {res['feeds'][idx]['title']}")
+        return res
 
     def get_feed_by_id(self, feed_id: str) -> dict | None:
         res: dict = self.request_builder("/podcasts/byfeedid", {

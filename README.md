@@ -1,10 +1,20 @@
 # TODO
 
+
+- [x] Add a page to 'Add Podcasts'
+- [ ] Add custom fields to podcasts for 
+    - Last fetched
+    - Downloaded count(eps)
+- [ ] Add Image Caching
+- [ ] Fetch podcast episodes whenever a new one is added
+- [ ] Add a scheduler to fetch podcast episodes periodically
+- [ ] Add a settings page
+
 - [ ] Figure out a directory Structure
     - Podcast Name
         - EP {ep_num} - {ep_title}.mp3
         - Cover.jpg
-- [ ] Figure out a DB Structure
+- [x] Figure out a DB Structure
     - Podcast Fields
         1. id(unique)
         2. title
@@ -30,6 +40,8 @@
         9. season
         10. image
         11. language?
+        12. Downloaded
+        13. File_path
 
 
 # Features
