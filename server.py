@@ -1,5 +1,5 @@
 from flask import Flask, render_template, request, jsonify
-from utils import file_to_dict
+# from utils import file_to_dict
 
 from app import App
 
@@ -45,6 +45,10 @@ class Server:
         def get_eps_by_podcast(podcast_id: int):
             return jsonify(self.app.get_episodes_by_podcast(podcast_id))
         
+        @self.server.route("/get-podcast-info/<int:podcast_id>", methods=["GET"])
+        def get_podcast_info(podcast_id: int):
+            return jsonify(self.app.get_podcast_info(podcast_id))
+
         @self.server.route("/get-podcast-by-name", methods=["GET"])
         def fetch_podcast():
             query = request.args.get("query")

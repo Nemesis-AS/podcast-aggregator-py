@@ -1,7 +1,29 @@
-async function getEpisodes(feedId) {
-    const res = await fetch(`/get-podcast-episodes/${feedId}`);
+// async function getEpisodes(feedId) {
+//     const res = await fetch(`/get-podcast-episodes/${feedId}`);
+//     const json = await res.json();
+//     console.log(json);
+//     renderEpisodes(json);
+// }
+
+async function getPodcast(feedId) {
+    const res = await fetch(`/get-podcast-info/${feedId}`);
     const json = await res.json();
-    renderEpisodes(json);
+    console.log(json);
+    renderPodcast(json.podcast);
+    renderEpisodes(json.episodes);
+}
+
+function renderPodcast(podcastData) {
+    // @temp
+    const html = `<div class="art">
+        <img class="podcast-artwork" src="${podcastData[5]}" alt="" />
+    </div>
+    <div class="info-text">
+        <div class="title">${podcastData[1]}</div>
+        <div class="author">${podcastData[4]}</div>
+        <div class="description">${podcastData[3]}</div>
+    </div>`;
+    document.querySelector(".info-banner").innerHTML = html;
 }
 
 function renderEpisodes(episodes) {
@@ -48,5 +70,7 @@ function buildRow(data, idx) {
 }
 
 window.onload = async () => {
-    getEpisodes(window.feedId);
+    // getEpisodes(window.feedId);
+    getPodcast(window.feedId);
+    // console.log("Working")
 }

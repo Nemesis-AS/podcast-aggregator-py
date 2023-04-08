@@ -46,6 +46,13 @@ class App:
     
     def get_all_podcasts(self) -> list:
         return self.db.get_podcasts()
+    
+    def get_podcast_info(self, podcast_id: int) -> dict:
+        data = {
+            "podcast": self.db.get_podcasts_by_id(podcast_id),
+            "episodes": self.get_episodes_by_podcast(podcast_id)
+        }
+        return data
 
 if __name__ == "__main__":
     app = App()

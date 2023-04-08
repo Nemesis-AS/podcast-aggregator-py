@@ -1,4 +1,6 @@
 import sqlite3
+import time
+import requests
 
 class DB:
     def __init__(self, db_path: str = ":memory:") -> None:
@@ -9,9 +11,9 @@ class DB:
     
     def build_db(self) -> None:
         if not self.table_exists("podcasts"):
-            self.cursor.execute("CREATE TABLE podcasts(id, title, link, desc, author, artwork, last_upload, itunes_id, lang, explicit, ep_count, categories)")
+            self.cursor.execute("CREATE TABLE podcasts(id, title, link, desc, author, artwork, last_upload, itunes_id, lang, explicit, ep_count, categories, last_updated)")
         if not self.table_exists("episodes"):
-            self.cursor.execute("CREATE TABLE episodes(id, title, link, desc, date_pub, duration, explicit, episode, season, artwork, podcast)") # downloaded, file_path
+            self.cursor.execute("CREATE TABLE episodes(id, title, link, desc, date_pub, duration, explicit, episode, season, artwork, podcast, downloaded, file_path)") # downloaded, file_path
         if not self.table_exists("images"):
             self.cursor.execute("CREATE TABLE images(url, image)")
 
@@ -22,9 +24,9 @@ class DB:
     def get_podcasts(self) -> list:
         return self.return_all("SELECT * FROM podcasts")
 
-    def get_podcasts_by_property(self, property: str, value: str | int) -> list:
-        self.cursor.execute("SELECT * FROM podcasts WHERE ? = ?", [property, str(value)])
-        return self.cursor.fetchall()
+    def get_podcasts_by_id(self, pod_id: str | int) -> list:
+        self.cursor.execute("SELECT * FROM podcasts WHERE id = ?", [int(pod_id)])
+        return self.cursor.fetchone()
 
     def get_episodes_by_podcast(self, podcast: str | int) -> list:
         self.cursor.execute("SELECT * FROM episodes WHERE podcast = ? ORDER BY date_pub DESC", [podcast])
@@ -33,7 +35,7 @@ class DB:
     def add_podcast(self, podcast: dict) -> None: # Add Podcast Class
         if self.item_exists("podcasts", "id", podcast["id"]): return
 
-        self.cursor.execute("INSERT INTO podcasts VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", [
+        self.cursor.execute("INSERT INTO podcasts VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", [
             podcast["id"],
             podcast["title"],
             podcast["link"],
@@ -46,14 +48,17 @@ class DB:
             podcast["explicit"],
             podcast["episodeCount"],
             str(podcast["episodeCount"]),
+            time.time()
         ])
+
+        self.cache_image(podcast["id"], podcast["artwork"])
         self.conn.commit()
 
     def add_episodes(self, episodes: list[dict]) -> None: # Add Episode Class        
         for episode in episodes:
             if self.item_exists("episodes", "id", episode["id"]): continue
 
-            self.cursor.execute("INSERT INTO episodes VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", [
+            self.cursor.execute("INSERT INTO episodes VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", [
             episode["id"],
             episode["title"],
             episode["link"],
@@ -65,8 +70,14 @@ class DB:
             episode["season"],
             episode["image"],
             episode["feedId"],
+            False,
+            ""
         ])
         self.conn.commit()
+    
+    def cache_image(self, pod_id: str, url: str) -> None:
+        req = requests.get(url)
+        print(req)
 
     def close(self) -> None:
         self.conn.close()
