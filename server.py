@@ -13,25 +13,38 @@ class Server:
         self.server = Flask(__name__)
 
         @self.server.route("/")
-        def index() -> str:
+        def view_index_page() -> str:
             return render_template("index.html")
         
         @self.server.route("/add/new")
-        def add_pod() -> str:
+        def view_add_pod_page() -> str:
             return render_template("addpodcast.html")
 
+        @self.server.route("/settings")
+        def view_settings_page() -> str:
+            return render_template("settings.html")
+
         @self.server.route("/viewfeed/<int:feed_id>")
-        def viewfeed(feed_id: int) -> str:
+        def view_feeg_page(feed_id: int) -> str:
             return render_template("viewfeed.html", feed_id=feed_id)
 
+
+
         @self.server.route("/config", methods=["GET", "POST"])
-        def config() -> str: # @todo
+        def config(): # @todo
+            # print(request.method == "POST")
             match request.method:
                 case "GET":
-                    pass
+                    config = self.app.get_config_as_json()
+                    return jsonify(config)
                 case "POST":
-                    pass
-            return ""
+                    body = request.json
+                    if body: 
+                        self.app.set_config(body)
+                        return ("", 200)
+                    return ("", 400)
+            return ("", 404)
+
 
         @self.server.route("/feeds", methods=["GET"])
         def feeds():
@@ -62,6 +75,25 @@ class Server:
             if pod_id is not None:
                 self.app.add_podcast_to_subscriptions(pod_id)
             return jsonify({"status": pod_id is not None})
+        
+        @self.server.route("/podcast/delete/<int:podcast_id>", methods=["GET"])
+        def podcast_delete(podcast_id: int):
+            self.app.db.remove_podcast(podcast_id)
+            return ("", 200)
+        
+        @self.server.route("/episode/delete/<int:episode_id>", methods=["GET"])
+        def episode_delete(episode_id: int):
+            self.app.db.remove_episode(episode_id)
+            return ("", 200)
+
+        @self.server.route("/podcast/artwork/<int:podcast_id>")
+        def podcast_artwork(podcast_id: int):
+            cache = self.app.get_image(podcast_id)
+            if cache:
+                return cache
+            else:
+                return ""
+
 
     def start(self) -> None:
         self.server.run(debug=True)

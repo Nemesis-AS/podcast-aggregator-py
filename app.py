@@ -3,10 +3,40 @@ from config import *
 from db import DB
 from api import PodcastIndexAPI
 
+import os, configparser
+
 class App:
     def __init__(self) -> None:
-        self.api = PodcastIndexAPI(PODCASTINDEX_KEY, PODCASTINDEX_SECRET)
-        self.db = DB("./data/test.sqlite")
+        self.load_config()
+        self.api: PodcastIndexAPI = PodcastIndexAPI(PODCASTINDEX_KEY, PODCASTINDEX_SECRET)
+        self.db: DB = DB("./data/test.sqlite")
+
+    ################################################ CONFIG ################################################
+    
+    def load_config(self) -> None:
+        self.config: configparser.ConfigParser = configparser.ConfigParser()
+        if not os.path.isfile("./config.ini"):
+            with open("./config.ini", "w") as file:
+                file.close()
+        self.config.read("./config.ini")
+
+    def get_config_as_json(self) -> dict:
+        d: dict = {}
+        for key in self.config["config"]:
+            d[key] = self.config["config"][key]
+        return d
+
+    def set_config(self, data: dict) -> None:
+        for key in data:
+            if self.config["config"][key] != data[key]: self.config["config"][key] = data[key]
+        self.write_config()
+
+    def write_config(self) -> None:
+        with open("./config.ini", "w") as file:
+            self.config.write(file)
+            file.close()
+
+    ########################################################################################################
 
     def update_episodes(self) -> None:
         feeds = self.db.get_properties_from_table("id", "podcasts")
@@ -34,6 +64,7 @@ class App:
         podcast = self.api.get_feed_by_id(pod_id)
         if podcast is not None:
             self.db.add_podcast(podcast["feed"])
+            self.update_episodes()
 
     # API
     def get_episodes_by_podcast(self, podcast_id: int) -> list:
@@ -53,7 +84,15 @@ class App:
             "episodes": self.get_episodes_by_podcast(podcast_id)
         }
         return data
+    
+    def get_image(self, podcast_id: int) -> str:
+        exists = os.path.isfile(f"static/covers/{podcast_id}--artwork.jpg")
+        if not exists:
+            return ""
+        else:
+            return f"static/covers/{podcast_id}--artwork.jpg"
 
 if __name__ == "__main__":
     app = App()
-    app.get_episodes_by_podcast(359782)
+    # app.get_episodes_by_podcast(359782)
+    print(app.get_config_as_json())

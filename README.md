@@ -2,10 +2,10 @@
 
 
 - [x] Add a page to 'Add Podcasts'
-- [ ] Add custom fields to podcasts for 
+- [x] Add custom fields to podcasts for 
     - Last fetched
     - Downloaded count(eps)
-- [ ] Add Image Caching
+- [ ] Add Image Caching[LATER]
 - [ ] Fetch podcast episodes whenever a new one is added
 - [ ] Add a scheduler to fetch podcast episodes periodically
 - [ ] Add a settings page

@@ -1,0 +1,61 @@
+main .toolbar {
+    width: 100%;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    padding: 0 .2rem;
+    background-color: #4b5563;
+}
+
+main .toolbar button {
+    border: 0px;
+    padding: 1rem;
+    color: white;
+    cursor: pointer;
+    background-color: transparent;
+    transition: background-color 300ms;
+}
+
+main .toolbar button:hover {
+    background-color: rgba(0, 0, 0, 0.25);
+}
+
+main .settings {
+    padding: 1.5rem;
+}
+
+.settings .head {
+    font-size: 1.4rem;
+    font-weight: bold;
+    padding: 1rem 0;
+}
+
+.settings .setting-group {
+    padding: .5rem;
+}
+
+.settings .option-row {
+    display: flex;
+    max-width: min(900px, 90%);
+    align-items: center;
+    gap: 1rem;
+}
+
+.settings .option-row label {
+    flex: 0 0 250px;
+    text-align: right;
+    font-weight: bold;
+}
+
+.settings .option-row input {
+    flex: 1 1 auto;
+    padding: .2rem;
+    border: 2px solid #374151;
+    outline: none;
+    transition: border-color 300ms;
+}
+
+.settings .option-row input:active, .settings .option-row input:hover, .settings .option-row input:focus {
+    /* border-width: 2px; */
+    border-color: #0284c7;
+}

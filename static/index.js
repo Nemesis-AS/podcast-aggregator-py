@@ -2,6 +2,10 @@ const mainEl = document.getElementById("main");
 
 window.onload = async () => {
     const feeds = await getFeeds();
+    if (feeds.length <= 0) return;
+
+    // @temp
+    mainEl.innerHTML = "";
 
     feeds.forEach(feed => {
         mainEl.appendChild(createCard(feed));

@@ -2,5 +2,7 @@
 /.vscode
 /data
 /devenv
+/static/covers/*
 
 config.py
+config.ini

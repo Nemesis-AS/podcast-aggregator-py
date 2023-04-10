@@ -8,22 +8,12 @@
 
     <link rel="stylesheet" type="text/css" href="{{url_for("static", filename="common.css")}}" />
     <link rel="stylesheet" type="text/css" href="{{url_for("static", filename="viewfeed.css")}}" />
+
+    <script src="{{url_for("static", filename="common.js")}}"></script>
 </head>
 <body>
-    <header>
-        <div class="logo">Podcast Manager</div>
-    </header>
-
-    <section class="navbar">
-        <ul>
-            <li>
-                <a href="/add/new">Add Podcast</a>
-            </li>
-            <li>
-                <a href="/">View Podcasts</a>
-            </li>
-        </ul>
-    </section>
+    <header is="head-el"></header>
+    <section is="nav-bar" class="navbar"></section>
 
     <main>
         <div class="info-banner">

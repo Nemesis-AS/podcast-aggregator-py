@@ -13,7 +13,7 @@ class DB:
         if not self.table_exists("podcasts"):
             self.cursor.execute("CREATE TABLE podcasts(id, title, link, desc, author, artwork, last_upload, itunes_id, lang, explicit, ep_count, categories, last_updated)")
         if not self.table_exists("episodes"):
-            self.cursor.execute("CREATE TABLE episodes(id, title, link, desc, date_pub, duration, explicit, episode, season, artwork, podcast, downloaded, file_path)") # downloaded, file_path
+            self.cursor.execute("CREATE TABLE episodes(id, title, link, desc, date_pub, duration, explicit, episode, season, artwork, podcast, downloaded, file_path)")
         if not self.table_exists("images"):
             self.cursor.execute("CREATE TABLE images(url, image)")
 
@@ -47,7 +47,7 @@ class DB:
             podcast["language"],
             podcast["explicit"],
             podcast["episodeCount"],
-            str(podcast["episodeCount"]),
+            str(podcast["categories"]),
             time.time()
         ])
 
@@ -75,9 +75,22 @@ class DB:
         ])
         self.conn.commit()
     
+    def remove_podcast(self, pod_id: int) -> None:
+        if not self.item_exists("podcasts", "id", str(pod_id)): return
+        self.cursor.execute("DELETE FROM podcasts WHERE id = ?", [pod_id])
+        self.conn.commit()
+
+    def remove_episode(self, ep_id: int) -> None:
+        if not self.item_exists("episodes", "id", str(ep_id)): return
+        self.cursor.execute("DELETE FROM podcasts WHERE id = ?", [ep_id])
+        self.conn.commit()
+
     def cache_image(self, pod_id: str, url: str) -> None:
         req = requests.get(url)
-        print(req)
+        if req.status_code == requests.codes.ok:
+            with open(f"static/covers/{pod_id}--artwork.jpg", "wb") as img:
+                for chunk in req.iter_content(chunk_size=128):
+                    img.write(chunk)
 
     def close(self) -> None:
         self.conn.close()
@@ -97,4 +110,3 @@ class DB:
 # For Debugging
 if __name__ == "__main__":
     db = DB("./data/dbtest.sqlite")
-
