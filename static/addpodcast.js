@@ -26,8 +26,10 @@ async function addPodcast(e) {
 
     if (!json.status) {
         console.error("An Error Occured while adding the podcast");
+        addToast("Could'nt Add Podcast!", "danger");
     } else {
         console.log("Added Podcast");
+        addToast("Added Podcast Successfully!", "success");
     }
 }
 

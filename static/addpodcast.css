@@ -38,6 +38,11 @@ main > form > button {
     grid-template-columns: min(30%, 256px) 70%;
     gap: .5rem;
     padding: 1rem 2rem;
+    transition: background-color 300ms;
+}
+
+.res-podcast:hover {
+    background-color: #e5e7eb;
 }
 
 .res-podcast > .pod-artwork {
@@ -71,6 +76,10 @@ main > form > button {
     color: #374151;
     display: flex;
     gap: 1rem;
+}
+
+.pod-desc {
+    flex-grow: 1;
 }
 
 .pod-tags {
