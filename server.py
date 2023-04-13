@@ -13,6 +13,8 @@ class Server:
     def create_app(self) -> None:
         self.server = Flask(__name__)
 
+        ############################################## VIEWS ###############################################
+        
         @self.server.route("/")
         def view_index_page() -> str:
             return render_template("index.html")
@@ -29,6 +31,7 @@ class Server:
         def view_feeg_page(feed_id: int) -> str:
             return render_template("viewfeed.html", feed_id=feed_id)
 
+        ####################################################################################################
 
 
         @self.server.route("/config", methods=["GET", "POST"])
@@ -41,9 +44,9 @@ class Server:
                     body = request.json
                     if body: 
                         self.app.set_config(body)
-                        return ("", 200)
-                    return ("", 400)
-            return ("", 404)
+                        return jsonify({"status": 200})
+                    return ({"status": 400})
+            return ({"status": 404})
 
 
         @self.server.route("/feeds", methods=["GET"])
@@ -52,7 +55,7 @@ class Server:
                 case "GET":
                     data = self.app.get_all_podcasts()
                     return jsonify({ "feeds": data })
-            return ""
+            return jsonify({"status": 404})
         
         @self.server.route("/get-podcast-episodes/<int:podcast_id>", methods=["GET"])
         def get_eps_by_podcast(podcast_id: int):
@@ -79,12 +82,12 @@ class Server:
         @self.server.route("/podcast/delete/<int:podcast_id>", methods=["GET"])
         def podcast_delete(podcast_id: int):
             self.app.db.remove_podcast(podcast_id)
-            return ("", 200)
+            return jsonify({"status": 200})
         
         @self.server.route("/episode/delete/<int:episode_id>", methods=["GET"])
         def episode_delete(episode_id: int):
             self.app.db.remove_episode(episode_id)
-            return ("", 200)
+            return jsonify({"status": 200})
 
         @self.server.route("/podcast/artwork/<int:podcast_id>")
         def podcast_artwork(podcast_id: int):
