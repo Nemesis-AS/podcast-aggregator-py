@@ -4,7 +4,6 @@ window.onload = async () => {
     const feeds = await getFeeds();
     if (feeds.length <= 0) return;
 
-    // @temp
     mainEl.innerHTML = "";
 
     feeds.forEach(feed => {
@@ -19,10 +18,15 @@ async function getFeeds() {
 }
 
 function createCard(podcast) {
+    fetch(`/podcast/artwork/${podcast[0]}`).then(res => res.json()).then(json => {
+        imageUrl = json.url;
+        document.querySelector(`.img_${podcast[0]}`).src = imageUrl;
+    });
+
     const el = document.createElement("div");
     el.classList.add("card");
     el.innerHTML = `
-        <img class="card-image" src="${podcast[5]}" alt="${podcast[1]}" />
+        <img class="card-image img_${podcast[0]}" src="" alt="${podcast[1]}" />
         <div class="card-body">
             <a href="viewfeed/${podcast[0]}" class="title">
                 ${truncateString(podcast[1], 40)}

@@ -38,6 +38,8 @@ class App:
 
     ########################################################################################################
 
+    ############################################### ACTIONS ################################################
+
     def update_episodes(self) -> None:
         feeds = self.db.get_properties_from_table("id", "podcasts")
 
@@ -47,18 +49,15 @@ class App:
             
             if eps is not None and len(eps["items"]) > 0:
                 self.db.add_episodes(eps["items"])
-    
-    def fetch_episodes(self, pod_id: int) -> dict | None: # @temp
-        return self.api.get_episodes_by_id(str(pod_id))
 
-    def download_episodes(self) -> None:
-        pass
+    # def download_episodes(self) -> None:
+    #     pass
 
-    def verify_ep_files(self) -> None:
-        pass
+    # def verify_ep_files(self) -> None:
+    #     pass
 
-    def download_episode(self, ep_link: str, location: str) -> None:
-        pass
+    # def download_episode(self, ep_link: str, location: str) -> None:
+    #     pass
 
     def add_podcast_to_subscriptions(self, pod_id: str) -> None:
         podcast = self.api.get_feed_by_id(pod_id)
@@ -66,7 +65,10 @@ class App:
             self.db.add_podcast(podcast["feed"])
             self.update_episodes()
 
-    # API
+    ########################################################################################################
+
+    ################################################# API ##################################################
+
     def get_episodes_by_podcast(self, podcast_id: int) -> list:
         return self.db.get_episodes_by_podcast(podcast_id)
     
@@ -88,9 +90,13 @@ class App:
     def get_image(self, podcast_id: int) -> str:
         exists = os.path.isfile(f"static/covers/{podcast_id}--artwork.jpg")
         if not exists:
-            return ""
+            filename = self.db.cache_image(str(podcast_id), "", True)
+            if filename: return filename
+            return "default.jpg"
         else:
-            return f"static/covers/{podcast_id}--artwork.jpg"
+            return f"{podcast_id}--artwork.jpg"
+
+    ########################################################################################################
 
 if __name__ == "__main__":
     app = App()

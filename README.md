@@ -5,10 +5,10 @@
 - [x] Add custom fields to podcasts for 
     - Last fetched
     - Downloaded count(eps)
-- [ ] Add Image Caching[LATER]
-- [ ] Fetch podcast episodes whenever a new one is added
+- [x] Add Image Caching
+- [x] Fetch podcast episodes whenever a new one is added
 - [ ] Add a scheduler to fetch podcast episodes periodically
-- [ ] Add a settings page
+- [x] Add a settings page
 
 - [ ] Figure out a directory Structure
     - Podcast Name
@@ -42,6 +42,9 @@
         11. language?
         12. Downloaded
         13. File_path
+
+
+# BUGS
 
 
 # Features

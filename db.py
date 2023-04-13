@@ -13,7 +13,7 @@ class DB:
         if not self.table_exists("podcasts"):
             self.cursor.execute("CREATE TABLE podcasts(id, title, link, desc, author, artwork, last_upload, itunes_id, lang, explicit, ep_count, categories, last_updated)")
         if not self.table_exists("episodes"):
-            self.cursor.execute("CREATE TABLE episodes(id, title, link, desc, date_pub, duration, explicit, episode, season, artwork, podcast, downloaded, file_path)")
+            self.cursor.execute("CREATE TABLE episodes(id, title, link, desc, date_pub, duration, explicit, episode, season, artwork, podcast, downloaded, file_path, download_link)") # Download_URL
         if not self.table_exists("images"):
             self.cursor.execute("CREATE TABLE images(url, image)")
 
@@ -75,22 +75,29 @@ class DB:
         ])
         self.conn.commit()
     
-    def remove_podcast(self, pod_id: int) -> None:
-        if not self.item_exists("podcasts", "id", str(pod_id)): return
-        self.cursor.execute("DELETE FROM podcasts WHERE id = ?", [pod_id])
+    def remove_podcast(self, pod_id: str | int) -> None:
+        if not self.item_exists("podcasts", "id", int(pod_id)): return
+        self.cursor.execute("DELETE FROM podcasts WHERE id = ?", [int(pod_id)])
         self.conn.commit()
 
-    def remove_episode(self, ep_id: int) -> None:
+    def remove_episode(self, ep_id: str | int) -> None:
         if not self.item_exists("episodes", "id", str(ep_id)): return
-        self.cursor.execute("DELETE FROM podcasts WHERE id = ?", [ep_id])
+        self.cursor.execute("DELETE FROM podcasts WHERE id = ?", [str(ep_id)])
         self.conn.commit()
 
-    def cache_image(self, pod_id: str, url: str) -> None:
+    def cache_image(self, pod_id: str | int, url: str = "", return_name: bool = False) -> None | str:
+        if not url: 
+            self.cursor.execute("SELECT artwork FROM podcasts WHERE id = ?", [int(pod_id)])
+            url = self.cursor.fetchone()[0]
+
+        if not url: return None
+
         req = requests.get(url)
         if req.status_code == requests.codes.ok:
             with open(f"static/covers/{pod_id}--artwork.jpg", "wb") as img:
                 for chunk in req.iter_content(chunk_size=128):
                     img.write(chunk)
+            if return_name: return "{pod_id}--artwork.jpg"
 
     def close(self) -> None:
         self.conn.close()
@@ -99,7 +106,7 @@ class DB:
         self.cursor.execute(statement)
         return self.cursor.fetchall()
     
-    def item_exists(self, table: str, property: str, value: str) -> bool:
+    def item_exists(self, table: str, property: str, value: str | int) -> bool:
         self.cursor.execute(f"SELECT {property} FROM {table} WHERE {property} = ?", [value]) 
         return bool(self.cursor.fetchone())
     
@@ -108,5 +115,5 @@ class DB:
         return self.cursor.fetchall()
 
 # For Debugging
-if __name__ == "__main__":
-    db = DB("./data/dbtest.sqlite")
+# if __name__ == "__main__":
+#     db = DB("./data/dbtest.sqlite")

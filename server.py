@@ -1,7 +1,8 @@
 from flask import Flask, render_template, request, jsonify
-# from utils import file_to_dict
 
 from app import App
+
+from os.path import join
 
 class Server:
     def __init__(self, name, app: App) -> None:
@@ -31,8 +32,7 @@ class Server:
 
 
         @self.server.route("/config", methods=["GET", "POST"])
-        def config(): # @todo
-            # print(request.method == "POST")
+        def config():
             match request.method:
                 case "GET":
                     config = self.app.get_config_as_json()
@@ -89,10 +89,8 @@ class Server:
         @self.server.route("/podcast/artwork/<int:podcast_id>")
         def podcast_artwork(podcast_id: int):
             cache = self.app.get_image(podcast_id)
-            if cache:
-                return cache
-            else:
-                return ""
+            root = self.server.config.get("STATIC_ROOT", "static")
+            return jsonify({ "url": join(root, "covers", cache) })
 
 
     def start(self) -> None:
