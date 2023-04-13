@@ -3,7 +3,8 @@ from config import *
 from db import DB
 from api import PodcastIndexAPI
 
-import os, configparser
+import os, configparser, requests
+from pathlib import Path
 
 class App:
     def __init__(self) -> None:
@@ -56,8 +57,36 @@ class App:
     # def verify_ep_files(self) -> None:
     #     pass
 
-    # def download_episode(self, ep_link: str, location: str) -> None:
-    #     pass
+    def download_episode(self, ep_id: str | int) -> bool:
+        print("Downloading")
+        root_dir = self.config.get("config", "download_dir")
+        ep_info = self.db.get_episode_by_id(ep_id)
+        pod_title = self.db.get_podcasts_by_id(ep_info[10])[1]
+        dir = os.path.join(root_dir, pod_title)
+        location = os.path.join(dir, f"{ep_info[1]}.mp3")
+        # print(location)
+        Path(dir).mkdir(parents=True, exist_ok=True)
+
+
+        download_url = ep_info[13]
+        if not download_url: return False
+
+        res = requests.get(download_url, stream=True)
+        chunk_size = 2048
+
+        # clen_header = res.headers.get("Content-Length")
+        # total_size = int(clen_header) if clen_header else 0
+
+        # curr_chunk = 0
+        res.raise_for_status()
+        with open(location, "wb") as file:
+            for chunk in res.iter_content(chunk_size=chunk_size):
+                file.write(chunk)
+                # curr_chunk += 1
+                # percentage = ((curr_chunk * chunk_size) / total_size) * 100
+        self.db.episode_mark_downloaded(ep_id)
+        return True
+        
 
     def add_podcast_to_subscriptions(self, pod_id: str) -> None:
         podcast = self.api.get_feed_by_id(pod_id)
@@ -100,5 +129,3 @@ class App:
 
 if __name__ == "__main__":
     app = App()
-    # app.get_episodes_by_podcast(359782)
-    print(app.get_config_as_json())

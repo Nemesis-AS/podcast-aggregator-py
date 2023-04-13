@@ -95,6 +95,12 @@ class Server:
             root = self.server.config.get("STATIC_ROOT", "static")
             return jsonify({ "url": join(root, "covers", cache) })
 
+        @self.server.route("/episode/download/<int:episode_id>")
+        def episode_download(episode_id: int):
+            res = self.app.download_episode(episode_id)
+            if res:
+                return jsonify({"status": 200})
+            return jsonify({"status": 418})
 
     def start(self) -> None:
         self.server.run(debug=True)

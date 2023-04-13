@@ -43,3 +43,24 @@ td, th {
     padding: .2rem .5rem;
     border-bottom: 1px solid black;
 }
+
+td button.download-btn {
+    border: none;
+    cursor: pointer;
+}
+
+td button.download-btn:disabled {
+    color: white;
+}
+
+td button.download-btn svg {
+    width: 32px;
+    height: 32px;
+    color: #334155;
+    transition: color 300ms;
+    pointer-events: none;
+}
+
+td button.download-btn svg:hover {
+    color: #0f172a;
+}

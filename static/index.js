@@ -19,8 +19,7 @@ async function getFeeds() {
 
 function createCard(podcast) {
     fetch(`/podcast/artwork/${podcast[0]}`).then(res => res.json()).then(json => {
-        imageUrl = json.url;
-        document.querySelector(`.img_${podcast[0]}`).src = imageUrl;
+        document.querySelector(`.img_${podcast[0]}`).src = json.url;
     });
 
     const el = document.createElement("div");

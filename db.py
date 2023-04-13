@@ -29,8 +29,12 @@ class DB:
         return self.cursor.fetchone()
 
     def get_episodes_by_podcast(self, podcast: str | int) -> list:
-        self.cursor.execute("SELECT * FROM episodes WHERE podcast = ? ORDER BY date_pub DESC", [podcast])
+        self.cursor.execute("SELECT * FROM episodes WHERE podcast = ? ORDER BY date_pub DESC", [int(podcast)])
         return self.cursor.fetchall()
+    
+    def get_episode_by_id(self, ep_id: str | int) -> list:
+        self.cursor.execute("SELECT * FROM episodes WHERE id = ?", [int(ep_id)])
+        return self.cursor.fetchone()
 
     def add_podcast(self, podcast: dict) -> None: # Add Podcast Class
         if self.item_exists("podcasts", "id", podcast["id"]): return
@@ -58,7 +62,7 @@ class DB:
         for episode in episodes:
             if self.item_exists("episodes", "id", episode["id"]): continue
 
-            self.cursor.execute("INSERT INTO episodes VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", [
+            self.cursor.execute("INSERT INTO episodes VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", [
             episode["id"],
             episode["title"],
             episode["link"],
@@ -71,7 +75,8 @@ class DB:
             episode["image"],
             episode["feedId"],
             False,
-            ""
+            "",
+            episode["enclosureUrl"]
         ])
         self.conn.commit()
     
@@ -81,8 +86,12 @@ class DB:
         self.conn.commit()
 
     def remove_episode(self, ep_id: str | int) -> None:
-        if not self.item_exists("episodes", "id", str(ep_id)): return
-        self.cursor.execute("DELETE FROM podcasts WHERE id = ?", [str(ep_id)])
+        if not self.item_exists("episodes", "id", int(ep_id)): return
+        self.cursor.execute("DELETE FROM podcasts WHERE id = ?", [int(ep_id)])
+        self.conn.commit()
+
+    def episode_mark_downloaded(self, ep_id: str | int) -> None:
+        self.cursor.execute("UPDATE episodes SET downloaded = 1 WHERE id = ?", [int(ep_id)])
         self.conn.commit()
 
     def cache_image(self, pod_id: str | int, url: str = "", return_name: bool = False) -> None | str:
