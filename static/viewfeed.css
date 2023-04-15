@@ -1,6 +1,11 @@
+body {
+    max-height: 100vh;
+}
+
 main {
     display: flex;
     flex-direction: column;
+    overflow-y: auto;
 }
 
 .info-banner {

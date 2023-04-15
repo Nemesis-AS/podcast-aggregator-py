@@ -119,6 +119,10 @@ main .toolbar button {
     cursor: pointer;
     background-color: transparent;
     transition: background-color 300ms;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
 }
 
 main .toolbar button:hover {

@@ -1,5 +1,5 @@
 import sqlite3
-import time
+from time import time
 import requests
 
 class DB:
@@ -52,7 +52,7 @@ class DB:
             podcast["explicit"],
             podcast["episodeCount"],
             str(podcast["categories"]),
-            time.time()
+            time()
         ])
 
         self.cache_image(podcast["id"], podcast["artwork"])

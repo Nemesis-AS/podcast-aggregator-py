@@ -3,9 +3,12 @@ from config import *
 from db import DB
 from api import PodcastIndexAPI
 
-import os, configparser, requests, subprocess
+import requests
+from configparser import ConfigParser
+from os.path import isfile, normpath, join
 from pathlib import Path
 from pathvalidate import sanitize_filename
+from subprocess import Popen
 
 class App:
     def __init__(self) -> None:
@@ -16,8 +19,8 @@ class App:
     ################################################ CONFIG ################################################
     
     def load_config(self) -> None:
-        self.config: configparser.ConfigParser = configparser.ConfigParser()
-        if not os.path.isfile("./config.ini"):
+        self.config: ConfigParser = ConfigParser()
+        if not isfile("./config.ini"):
             with open("./config.ini", "w") as file:
                 file.close()
         self.config.read("./config.ini")
@@ -66,8 +69,8 @@ class App:
         ep_info = self.db.get_episode_by_id(ep_id)
         pod_title = sanitize_filename(self.db.get_podcasts_by_id(ep_info[10])[1])
         ep_title = sanitize_filename(ep_info[1], "_", "auto")
-        dir = os.path.normpath(os.path.join(root_dir, pod_title))
-        location = os.path.normpath(os.path.join(dir, f"{ep_title}.mp3"))
+        dir = normpath(join(root_dir, pod_title))
+        location = normpath(join(dir, f"{ep_title}.mp3"))
         Path(dir).mkdir(parents=True, exist_ok=True)
 
 
@@ -113,10 +116,10 @@ class App:
         pod_title = self.db.get_podcasts_by_id(ep_info[10])[1]
 
         ep_title = sanitize_filename(ep_info[1], "_", "auto")
-        dir = os.path.join(root_dir, pod_title)
-        location = os.path.join(dir, f"{ep_title}.mp3")
+        dir = join(root_dir, pod_title)
+        location = join(dir, f"{ep_title}.mp3")
 
-        if os.path.isfile(location): 
+        if isfile(location): 
             self.db.episode_mark_downloaded(episode_id)
         else:
             self.db.episode_mark_downloaded(episode_id, True)
@@ -124,8 +127,8 @@ class App:
     def open_podcast_dir(self, podcast_id: str | int) -> None:
         root_dir = self.config.get("config", "download_dir")
         pod_info = self.db.get_podcasts_by_id(podcast_id)
-        dir = os.path.normpath(os.path.join(root_dir, pod_info[1]))
-        subprocess.Popen(f"explorer {dir}") # @temp Works on WINDOWS only
+        dir = normpath(join(root_dir, pod_info[1]))
+        Popen(f"explorer {dir}") # @temp Works on WINDOWS only
 
     ########################################################################################################
 
@@ -150,7 +153,7 @@ class App:
         return data
     
     def get_image(self, podcast_id: int) -> str:
-        exists = os.path.isfile(f"static/covers/{podcast_id}--artwork.jpg")
+        exists = isfile(f"static/covers/{podcast_id}--artwork.jpg")
         if not exists:
             filename = self.db.cache_image(str(podcast_id), "", True)
             if filename: return filename

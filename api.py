@@ -1,5 +1,6 @@
 from hashlib import sha1
-import time, requests
+import requests
+from time import time
 
 class PodcastIndexAPI:
     def __init__(self, key: str, secret: str) -> None:
@@ -41,7 +42,7 @@ class PodcastIndexAPI:
 
 
     def request_builder(self, endpoint: str, query: dict) -> dict:
-        epoch = str(int(time.time()))
+        epoch = str(int(time()))
         auth = sha1((self.API_KEY + self.API_SECRET + epoch).encode("utf-8")).hexdigest()
         headers = {
             "X-Auth-Key": self.API_KEY,
