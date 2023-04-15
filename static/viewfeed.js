@@ -146,4 +146,18 @@ window.onload = async () => {
             }
         });
     });
+
+    const deleteBtn = document.getElementById("deleteBtn");
+    deleteBtn.addEventListener("click", e => {
+        fetch(`/podcast/delete/${window.feedId}`).then(res => res.json()).then(json => {
+            if (json.status === 200) {
+                currentOrigin = new URL(window.location).origin;
+                window.location = currentOrigin;
+            } else {
+                displayErr();
+            }
+        }).catch(err => {
+            displayErr("An Error Occurred While Deleting the Podcast!", err);
+        });
+    });
 }

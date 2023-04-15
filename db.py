@@ -81,13 +81,19 @@ class DB:
         self.conn.commit()
     
     def remove_podcast(self, pod_id: str | int) -> None:
+        self.remove_episodes_by_podcast(pod_id)
+
         if not self.item_exists("podcasts", "id", int(pod_id)): return
         self.cursor.execute("DELETE FROM podcasts WHERE id = ?", [int(pod_id)])
         self.conn.commit()
 
     def remove_episode(self, ep_id: str | int) -> None:
         if not self.item_exists("episodes", "id", int(ep_id)): return
-        self.cursor.execute("DELETE FROM podcasts WHERE id = ?", [int(ep_id)])
+        self.cursor.execute("DELETE FROM episodes WHERE id = ?", [int(ep_id)])
+        self.conn.commit()
+
+    def remove_episodes_by_podcast(self, pod_id: str | int) -> None:
+        self.cursor.execute("DELETE FROM episodes WHERE podcast = ?", [int(pod_id)])
         self.conn.commit()
 
     def episode_mark_downloaded(self, ep_id: str | int, unmark: bool = False) -> None:

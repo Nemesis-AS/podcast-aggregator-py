@@ -1,5 +1,6 @@
 # TODO
 
+- [ ] Delete eps when podcast is deleted
 - [ ] Add Event Logger
 - [ ] Add Download Queue
 
