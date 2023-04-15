@@ -1,5 +1,7 @@
 # TODO
 
+- [ ] Add Event Logger
+- [ ] Add Download Queue
 
 - [x] Add a page to 'Add Podcasts'
 - [x] Add custom fields to podcasts for 
@@ -10,7 +12,7 @@
 - [ ] Add a scheduler to fetch podcast episodes periodically
 - [x] Add a settings page
 
-- [ ] Figure out a directory Structure
+- [x] Figure out a directory Structure
     - Podcast Name
         - EP {ep_num} - {ep_title}.mp3
         - Cover.jpg
@@ -43,9 +45,9 @@
         12. Downloaded
         13. File_path
 
-
 # BUGS
 
+- [x] Sanitize filename for the episode to be downloaded to exclude any characters that cannot be used in a file/dir name
 
 # Features
 

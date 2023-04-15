@@ -95,12 +95,34 @@ class Server:
             root = self.server.config.get("STATIC_ROOT", "static")
             return jsonify({ "url": join(root, "covers", cache) })
 
+        @self.server.route("/podcast/download/<int:podcast_id>")
+        def podcast_download(podcast_id: int):
+            res = self.app.download_podcast(podcast_id)
+            if res:
+                return jsonify({"status": 200})
+            return jsonify({"status": 418})
+
         @self.server.route("/episode/download/<int:episode_id>")
         def episode_download(episode_id: int):
             res = self.app.download_episode(episode_id)
             if res:
                 return jsonify({"status": 200})
             return jsonify({"status": 418})
+
+        @self.server.route("/episode/verify/<int:episode_id>")
+        def episode_verify(episode_id: int):
+            self.app.verify_episode(episode_id)
+            return jsonify({ "status": 200 })
+        
+        @self.server.route("/podcast/verify/<int:podcast_id>")
+        def podcast_verify(podcast_id: int):
+            self.app.verify_podcast(podcast_id)
+            return jsonify({ "status": 200 })
+        
+        @self.server.route("/podcast/open_dir/<int:podcast_id>")
+        def podcast_open_dir(podcast_id: int):
+            self.app.open_podcast_dir(podcast_id)
+            return jsonify({"status": 200})
 
     def start(self) -> None:
         self.server.run(debug=True)

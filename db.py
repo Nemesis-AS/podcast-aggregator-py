@@ -90,8 +90,9 @@ class DB:
         self.cursor.execute("DELETE FROM podcasts WHERE id = ?", [int(ep_id)])
         self.conn.commit()
 
-    def episode_mark_downloaded(self, ep_id: str | int) -> None:
-        self.cursor.execute("UPDATE episodes SET downloaded = 1 WHERE id = ?", [int(ep_id)])
+    def episode_mark_downloaded(self, ep_id: str | int, unmark: bool = False) -> None:
+        value = "0" if unmark else "1"
+        self.cursor.execute(f"UPDATE episodes SET downloaded = {value} WHERE id = ?", [int(ep_id)])
         self.conn.commit()
 
     def cache_image(self, pod_id: str | int, url: str = "", return_name: bool = False) -> None | str:

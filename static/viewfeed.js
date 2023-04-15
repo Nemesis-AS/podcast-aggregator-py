@@ -96,4 +96,54 @@ function buildRow(data, idx) {
 
 window.onload = async () => {
     getPodcast(window.feedId);
+
+    const displayErr = (msg, err) => {
+        if (err) console.error(`${msg}\n`, err);
+        addToast("An Error Occurred", "danger");
+    }
+
+    const refreshBtn = document.getElementById("refreshBtn");
+    refreshBtn.addEventListener("click", e => {
+        fetch(`/podcast/verify/${window.feedId}`).then(res => res.json()).then(json => {
+            if (json.status === 200) {
+                addToast("Verified Files!", "success");
+                document.querySelector("tbody.episodes").innerHTML = "";
+                getPodcast(window.feedId);
+            } else {
+                displayErr();
+            }
+        }).catch(err => {
+            displayErr("An Error Occurred while verifying files!", err);
+        });
+    });
+
+    const openDirBtn = document.getElementById("openDirBtn");
+    openDirBtn.addEventListener("click", e => {
+        fetch(`/podcast/open_dir/${window.feedId}`).then(res => res.json()).then(json => {
+            if (json.status != 200) {
+                displayErr();
+            }
+        }).catch(err => {
+            displayErr("An Error Occurred while Opening Explorer!", err);
+
+        });
+    });
+
+    const downloadBtn = document.getElementById("downloadBtn");
+    downloadBtn.addEventListener("click", e => {
+        fetch(`/podcast/download/${window.feedId}`).then(res => res.json()).then(json => {
+            document.querySelectorAll(".download-btn").forEach(item => item.innerHTML = SPINNER_SVG);
+
+            if (json.status === 200) {
+                console.log("Downloaded!");
+                addToast("Download Finished", "success");
+                // document.querySelectorAll(".download-btn").forEach(item => item.remove());
+                document.querySelector("tbody.episodes").innerHTML = "";
+                getPodcast(window.feedId);
+            } else if (json.status === 418) {
+                addToast("Download Failed", "danger");
+                document.querySelectorAll(".download-btn").forEach(item => item.innerHTML = DOWNLOAD_SVG);
+            }
+        });
+    });
 }

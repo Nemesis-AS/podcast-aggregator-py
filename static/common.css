@@ -102,3 +102,25 @@ toast-el button {
 toast-el.show {
     opacity: 1;
 }
+
+main .toolbar {
+    width: 100%;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    padding: 0 .2rem;
+    background-color: #4b5563;
+}
+
+main .toolbar button {
+    border: 0px;
+    padding: 1rem;
+    color: white;
+    cursor: pointer;
+    background-color: transparent;
+    transition: background-color 300ms;
+}
+
+main .toolbar button:hover {
+    background-color: rgba(0, 0, 0, 0.25);
+}

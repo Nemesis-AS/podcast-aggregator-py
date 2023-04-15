@@ -3,8 +3,9 @@ from config import *
 from db import DB
 from api import PodcastIndexAPI
 
-import os, configparser, requests
+import os, configparser, requests, subprocess
 from pathlib import Path
+from pathvalidate import sanitize_filename
 
 class App:
     def __init__(self) -> None:
@@ -51,20 +52,22 @@ class App:
             if eps is not None and len(eps["items"]) > 0:
                 self.db.add_episodes(eps["items"])
 
-    # def download_episodes(self) -> None:
-    #     pass
-
-    # def verify_ep_files(self) -> None:
-    #     pass
+    def download_podcast(self, podcast_id: str | int) -> bool:
+        eps = self.db.get_episodes_by_podcast(podcast_id)
+        output = True
+        for ep in eps:
+            res = self.download_episode(ep[0])
+            if not res: output = res
+        return output
 
     def download_episode(self, ep_id: str | int) -> bool:
-        print("Downloading")
+        # print("Downloading")
         root_dir = self.config.get("config", "download_dir")
         ep_info = self.db.get_episode_by_id(ep_id)
-        pod_title = self.db.get_podcasts_by_id(ep_info[10])[1]
-        dir = os.path.join(root_dir, pod_title)
-        location = os.path.join(dir, f"{ep_info[1]}.mp3")
-        # print(location)
+        pod_title = sanitize_filename(self.db.get_podcasts_by_id(ep_info[10])[1])
+        ep_title = sanitize_filename(ep_info[1], "_", "auto")
+        dir = os.path.normpath(os.path.join(root_dir, pod_title))
+        location = os.path.normpath(os.path.join(dir, f"{ep_title}.mp3"))
         Path(dir).mkdir(parents=True, exist_ok=True)
 
 
@@ -93,6 +96,36 @@ class App:
         if podcast is not None:
             self.db.add_podcast(podcast["feed"])
             self.update_episodes()
+
+    ########################################################################################################
+
+    ################################################## FS ##################################################
+
+    def verify_podcast(self, podcast_id: str | int) -> None:
+        episodes = self.db.get_episodes_by_podcast(podcast_id)
+        for ep in episodes:
+            self.verify_episode(ep[0])
+    
+    def verify_episode(self, episode_id: str | int) -> None:
+        root_dir = self.config.get("config", "download_dir")
+
+        ep_info = self.db.get_episode_by_id(episode_id)
+        pod_title = self.db.get_podcasts_by_id(ep_info[10])[1]
+
+        ep_title = sanitize_filename(ep_info[1], "_", "auto")
+        dir = os.path.join(root_dir, pod_title)
+        location = os.path.join(dir, f"{ep_title}.mp3")
+
+        if os.path.isfile(location): 
+            self.db.episode_mark_downloaded(episode_id)
+        else:
+            self.db.episode_mark_downloaded(episode_id, True)
+
+    def open_podcast_dir(self, podcast_id: str | int) -> None:
+        root_dir = self.config.get("config", "download_dir")
+        pod_info = self.db.get_podcasts_by_id(podcast_id)
+        dir = os.path.normpath(os.path.join(root_dir, pod_info[1]))
+        subprocess.Popen(f"explorer {dir}") # @temp Works on WINDOWS only
 
     ########################################################################################################
 
