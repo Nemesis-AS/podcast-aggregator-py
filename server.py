@@ -4,6 +4,7 @@ from app import App
 
 from os.path import join
 
+
 class Server:
     def __init__(self, name, app: App) -> None:
         self.name = name
@@ -14,11 +15,11 @@ class Server:
         self.server = Flask(__name__)
 
         ############################################## VIEWS ###############################################
-        
+
         @self.server.route("/")
         def view_index_page() -> str:
             return render_template("index.html")
-        
+
         @self.server.route("/add/new")
         def view_add_pod_page() -> str:
             return render_template("addpodcast.html")
@@ -33,7 +34,6 @@ class Server:
 
         ####################################################################################################
 
-
         @self.server.route("/config", methods=["GET", "POST"])
         def config():
             match request.method:
@@ -42,25 +42,24 @@ class Server:
                     return jsonify(config)
                 case "POST":
                     body = request.json
-                    if body: 
+                    if body:
                         self.app.set_config(body)
                         return jsonify({"status": 200})
-                    return ({"status": 400})
-            return ({"status": 404})
-
+                    return {"status": 400}
+            return {"status": 404}
 
         @self.server.route("/feeds", methods=["GET"])
         def feeds():
             match request.method:
                 case "GET":
                     data = self.app.get_all_podcasts()
-                    return jsonify({ "feeds": data })
+                    return jsonify({"feeds": data})
             return jsonify({"status": 404})
-        
+
         @self.server.route("/get-podcast-episodes/<int:podcast_id>", methods=["GET"])
         def get_eps_by_podcast(podcast_id: int):
             return jsonify(self.app.get_episodes_by_podcast(podcast_id))
-        
+
         @self.server.route("/get-podcast-info/<int:podcast_id>", methods=["GET"])
         def get_podcast_info(podcast_id: int):
             return jsonify(self.app.get_podcast_info(podcast_id))
@@ -71,19 +70,19 @@ class Server:
             if query is not None:
                 return jsonify(self.app.get_podcasts_by_name(query))
             return jsonify([])
-        
+
         @self.server.route("/add-podcast", methods=["GET"])
         def add_podcast():
             pod_id = request.args.get("pod_id")
             if pod_id is not None:
                 self.app.add_podcast_to_subscriptions(pod_id)
             return jsonify({"status": pod_id is not None})
-        
+
         @self.server.route("/podcast/delete/<int:podcast_id>", methods=["GET"])
         def podcast_delete(podcast_id: int):
             self.app.db.remove_podcast(podcast_id)
             return jsonify({"status": 200})
-        
+
         @self.server.route("/episode/delete/<int:episode_id>", methods=["GET"])
         def episode_delete(episode_id: int):
             self.app.db.remove_episode(episode_id)
@@ -93,18 +92,18 @@ class Server:
         def podcast_artwork(podcast_id: int):
             cache = self.app.get_image(podcast_id)
             root = self.server.config.get("STATIC_ROOT", "static")
-            return jsonify({ "url": join(root, "covers", cache) })
+            return jsonify({"url": join(root, "covers", cache)})
 
         @self.server.route("/podcast/download/<int:podcast_id>")
         def podcast_download(podcast_id: int):
-            res = self.app.download_podcast(podcast_id)
+            res = self.app.schedule_task("download_pod", [podcast_id])
             if res:
                 return jsonify({"status": 200})
             return jsonify({"status": 418})
 
         @self.server.route("/episode/download/<int:episode_id>")
         def episode_download(episode_id: int):
-            res = self.app.download_episode(episode_id)
+            res = self.app.schedule_task("download_ep", [episode_id])
             if res:
                 return jsonify({"status": 200})
             return jsonify({"status": 418})
@@ -112,13 +111,13 @@ class Server:
         @self.server.route("/episode/verify/<int:episode_id>")
         def episode_verify(episode_id: int):
             self.app.verify_episode(episode_id)
-            return jsonify({ "status": 200 })
-        
+            return jsonify({"status": 200})
+
         @self.server.route("/podcast/verify/<int:podcast_id>")
         def podcast_verify(podcast_id: int):
             self.app.verify_podcast(podcast_id)
-            return jsonify({ "status": 200 })
-        
+            return jsonify({"status": 200})
+
         @self.server.route("/podcast/open_dir/<int:podcast_id>")
         def podcast_open_dir(podcast_id: int):
             self.app.open_podcast_dir(podcast_id)
@@ -126,6 +125,7 @@ class Server:
 
     def start(self) -> None:
         self.server.run(debug=True)
+
 
 if __name__ == "__main__":
     app = Server(__name__, App())

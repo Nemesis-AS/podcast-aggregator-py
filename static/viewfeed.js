@@ -70,9 +70,9 @@ function buildRow(data, idx) {
                     fetch(`/episode/download/${e.target.dataset.id}`).then(res => res.json()).then(json => {
                         if (json.status === 200) {
                             console.log("Downloaded!");
-                            addToast("Download Finished", "success");
-                            document.querySelector(`.row_${e.target.dataset.id} td:nth-of-type(4)`).textContent = "Downloaded";
-                            e.target.remove();
+                            addToast("Download Queued", "success");
+                            document.querySelector(`.row_${e.target.dataset.id} td:nth-of-type(4)`).textContent = "Queued";
+                            // e.target.remove();
                         } else if (json.status === 418) {
                             addToast("Download Failed", "danger");
                             e.target.innerHTML = DOWNLOAD_SVG;
@@ -135,8 +135,8 @@ window.onload = async () => {
             document.querySelectorAll(".download-btn").forEach(item => item.innerHTML = SPINNER_SVG);
 
             if (json.status === 200) {
-                console.log("Downloaded!");
-                addToast("Download Finished", "success");
+                console.log("Download Queued!");
+                addToast("Download Queued", "success");
                 // document.querySelectorAll(".download-btn").forEach(item => item.remove());
                 document.querySelector("tbody.episodes").innerHTML = "";
                 getPodcast(window.feedId);

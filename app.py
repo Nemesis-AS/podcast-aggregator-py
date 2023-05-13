@@ -9,15 +9,22 @@ from os.path import isfile, normpath, join
 from pathlib import Path
 from pathvalidate import sanitize_filename
 from subprocess import Popen
+import concurrent.futures
+
 
 class App:
     def __init__(self) -> None:
         self.load_config()
-        self.api: PodcastIndexAPI = PodcastIndexAPI(PODCASTINDEX_KEY, PODCASTINDEX_SECRET)
+        self.api: PodcastIndexAPI = PodcastIndexAPI(
+            PODCASTINDEX_KEY, PODCASTINDEX_SECRET
+        )
         self.db: DB = DB("./data/test.sqlite")
+        self.scheduler = concurrent.futures.ThreadPoolExecutor(
+            max_workers=2, thread_name_prefix="scheduler"
+        )
 
     ################################################ CONFIG ################################################
-    
+
     def load_config(self) -> None:
         self.config: ConfigParser = ConfigParser()
         if not isfile("./config.ini"):
@@ -33,13 +40,26 @@ class App:
 
     def set_config(self, data: dict) -> None:
         for key in data:
-            if self.config["config"][key] != data[key]: self.config["config"][key] = data[key]
+            if self.config["config"][key] != data[key]:
+                self.config["config"][key] = data[key]
         self.write_config()
 
     def write_config(self) -> None:
         with open("./config.ini", "w") as file:
             self.config.write(file)
             file.close()
+
+    ########################################################################################################
+
+    ############################################## SCHEDULING ##############################################
+
+    def schedule_task(self, task: str, args: list) -> bool:
+        match task:
+            case "download_ep":
+                self.scheduler.submit(self.download_episode, args[0])
+            case "download_pod":
+                self.scheduler.submit(self.download_podcast, args[0])
+        return True
 
     ########################################################################################################
 
@@ -51,7 +71,7 @@ class App:
         for feed in feeds:
             feed_id = feed[0]
             eps = self.api.get_episodes_by_id(str(feed_id))
-            
+
             if eps is not None and len(eps["items"]) > 0:
                 self.db.add_episodes(eps["items"])
 
@@ -60,7 +80,8 @@ class App:
         output = True
         for ep in eps:
             res = self.download_episode(ep[0])
-            if not res: output = res
+            if not res:
+                output = res
         return output
 
     def download_episode(self, ep_id: str | int) -> bool:
@@ -73,9 +94,9 @@ class App:
         location = normpath(join(dir, f"{ep_title}.mp3"))
         Path(dir).mkdir(parents=True, exist_ok=True)
 
-
         download_url = ep_info[13]
-        if not download_url: return False
+        if not download_url:
+            return False
 
         res = requests.get(download_url, stream=True)
         chunk_size = 2048
@@ -92,7 +113,20 @@ class App:
                 # percentage = ((curr_chunk * chunk_size) / total_size) * 100
         self.db.episode_mark_downloaded(ep_id)
         return True
-        
+
+    # def debug_download(self, ep_id: str | int) -> bool:
+    #     print("Debug Downloading", ep_id)
+    #     sleep(1)
+    #     return True
+
+    # def debug_download_pod(self, podcast_id: str | int) -> bool:
+    #     eps = self.db.get_episodes_by_podcast(podcast_id)
+    #     output = True
+    #     for ep in eps:
+    #         res = self.debug_download(ep[0])
+    #         if not res:
+    #             output = res
+    #     return output
 
     def add_podcast_to_subscriptions(self, pod_id: str) -> None:
         podcast = self.api.get_feed_by_id(pod_id)
@@ -108,7 +142,7 @@ class App:
         episodes = self.db.get_episodes_by_podcast(podcast_id)
         for ep in episodes:
             self.verify_episode(ep[0])
-    
+
     def verify_episode(self, episode_id: str | int) -> None:
         root_dir = self.config.get("config", "download_dir")
 
@@ -119,7 +153,7 @@ class App:
         dir = join(root_dir, pod_title)
         location = join(dir, f"{ep_title}.mp3")
 
-        if isfile(location): 
+        if isfile(location):
             self.db.episode_mark_downloaded(episode_id)
         else:
             self.db.episode_mark_downloaded(episode_id, True)
@@ -128,7 +162,7 @@ class App:
         root_dir = self.config.get("config", "download_dir")
         pod_info = self.db.get_podcasts_by_id(podcast_id)
         dir = normpath(join(root_dir, pod_info[1]))
-        Popen(f"explorer {dir}") # @temp Works on WINDOWS only
+        Popen(f"explorer {dir}")  # @temp Works on WINDOWS only
 
     ########################################################################################################
 
@@ -136,32 +170,35 @@ class App:
 
     def get_episodes_by_podcast(self, podcast_id: int) -> list:
         return self.db.get_episodes_by_podcast(podcast_id)
-    
+
     def get_podcasts_by_name(self, title: str) -> list:
         data = self.api.get_podcast_by_title(title)
-        if data is not None and len(data["feeds"]) > 0: return data["feeds"]
+        if data is not None and len(data["feeds"]) > 0:
+            return data["feeds"]
         return []
-    
+
     def get_all_podcasts(self) -> list:
         return self.db.get_podcasts()
-    
+
     def get_podcast_info(self, podcast_id: int) -> dict:
         data = {
             "podcast": self.db.get_podcasts_by_id(podcast_id),
-            "episodes": self.get_episodes_by_podcast(podcast_id)
+            "episodes": self.get_episodes_by_podcast(podcast_id),
         }
         return data
-    
+
     def get_image(self, podcast_id: int) -> str:
         exists = isfile(f"static/covers/{podcast_id}--artwork.jpg")
         if not exists:
             filename = self.db.cache_image(str(podcast_id), "", True)
-            if filename: return filename
+            if filename:
+                return filename
             return "default.jpg"
         else:
             return f"{podcast_id}--artwork.jpg"
 
     ########################################################################################################
+
 
 if __name__ == "__main__":
     app = App()
