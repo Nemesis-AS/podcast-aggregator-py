@@ -3,13 +3,14 @@ from config import *
 from db import DB
 from api import PodcastIndexAPI
 
+import concurrent.futures
+import logging
 import requests
 from configparser import ConfigParser
 from os.path import isfile, normpath, join
 from pathlib import Path
 from pathvalidate import sanitize_filename
 from subprocess import Popen
-import concurrent.futures
 
 
 class App:
@@ -21,6 +22,13 @@ class App:
         self.db: DB = DB("./data/test.sqlite")
         self.scheduler = concurrent.futures.ThreadPoolExecutor(
             max_workers=2, thread_name_prefix="scheduler"
+        )
+
+        logging.basicConfig(
+            filename="log.txt",
+            level=logging.DEBUG,
+            format="%(asctime)s - %(levelname)s: %(message)s",
+            datefmt="%Y-%m-%d %H:%M:%S",
         )
 
     ################################################ CONFIG ################################################
@@ -59,6 +67,8 @@ class App:
                 self.scheduler.submit(self.download_episode, args[0])
             case "download_pod":
                 self.scheduler.submit(self.download_podcast, args[0])
+
+        logging.debug("Added Task to Scheduler: %s(%s)", task, args)
         return True
 
     ########################################################################################################
@@ -67,6 +77,7 @@ class App:
 
     def update_episodes(self) -> None:
         feeds = self.db.get_properties_from_table("id", "podcasts")
+        logging.info("Updating Episodes")
 
         for feed in feeds:
             feed_id = feed[0]
@@ -76,6 +87,7 @@ class App:
                 self.db.add_episodes(eps["items"])
 
     def download_podcast(self, podcast_id: str | int) -> bool:
+        logging.info("Downloading Podcast: %s", podcast_id)
         eps = self.db.get_episodes_by_podcast(podcast_id)
         output = True
         for ep in eps:
@@ -86,6 +98,7 @@ class App:
 
     def download_episode(self, ep_id: str | int) -> bool:
         # print("Downloading")
+        logging.info("Downloading Episode: %s", ep_id)
         root_dir = self.config.get("config", "download_dir")
         ep_info = self.db.get_episode_by_id(ep_id)
         pod_title = sanitize_filename(self.db.get_podcasts_by_id(ep_info[10])[1])
@@ -114,21 +127,8 @@ class App:
         self.db.episode_mark_downloaded(ep_id)
         return True
 
-    # def debug_download(self, ep_id: str | int) -> bool:
-    #     print("Debug Downloading", ep_id)
-    #     sleep(1)
-    #     return True
-
-    # def debug_download_pod(self, podcast_id: str | int) -> bool:
-    #     eps = self.db.get_episodes_by_podcast(podcast_id)
-    #     output = True
-    #     for ep in eps:
-    #         res = self.debug_download(ep[0])
-    #         if not res:
-    #             output = res
-    #     return output
-
     def add_podcast_to_subscriptions(self, pod_id: str) -> None:
+        logging.info("Adding Podcast to Subscriptions: %s", pod_id)
         podcast = self.api.get_feed_by_id(pod_id)
         if podcast is not None:
             self.db.add_podcast(podcast["feed"])
@@ -155,8 +155,10 @@ class App:
 
         if isfile(location):
             self.db.episode_mark_downloaded(episode_id)
+            logging.info("Marked %s as Downloaded", episode_id)
         else:
             self.db.episode_mark_downloaded(episode_id, True)
+            logging.info("Marked %s as Not Downloaded", episode_id)
 
     def open_podcast_dir(self, podcast_id: str | int) -> None:
         root_dir = self.config.get("config", "download_dir")
