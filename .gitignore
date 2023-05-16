@@ -9,3 +9,7 @@ config.ini
 
 misc.py
 utils.py
+
+log.txt
+*.log
+/logs

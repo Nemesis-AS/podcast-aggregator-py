@@ -7,10 +7,12 @@ import concurrent.futures
 import logging
 import requests
 from configparser import ConfigParser
-from os.path import isfile, normpath, join
+from os.path import isfile, normpath, join, exists
+from os import makedirs
 from pathlib import Path
 from pathvalidate import sanitize_filename
 from subprocess import Popen
+from time import time
 
 
 class App:
@@ -24,8 +26,12 @@ class App:
             max_workers=2, thread_name_prefix="scheduler"
         )
 
+        if not exists("logs"):
+            makedirs("logs")
+
+        filename = f"logs/{int(time())}.log"
         logging.basicConfig(
-            filename="log.txt",
+            filename=filename,
             level=logging.DEBUG,
             format="%(asctime)s - %(levelname)s: %(message)s",
             datefmt="%Y-%m-%d %H:%M:%S",
