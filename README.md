@@ -1,57 +1,29 @@
-# TODO
+# Podcast Aggregator Py
 
-- [ ] Delete eps when podcast is deleted
-- [ ] Add Event Logger
-- [ ] Add Download Queue
+A flask app to find and download podcasts
 
-- [x] Add a page to 'Add Podcasts'
-- [x] Add custom fields to podcasts for 
-    - Last fetched
-    - Downloaded count(eps)
-- [x] Add Image Caching
-- [x] Fetch podcast episodes whenever a new one is added
-- [ ] Add a scheduler to fetch podcast episodes periodically
-- [x] Add a settings page
+## Installation
 
-- [x] Figure out a directory Structure
-    - Podcast Name
-        - EP {ep_num} - {ep_title}.mp3
-        - Cover.jpg
-- [x] Figure out a DB Structure
-    - Podcast Fields
-        1. id(unique)
-        2. title
-        3. link(url)
-        4. Description
-        5. author
-        6. image/artwork
-        7. last updated
-        8. iTunes ID
-        9. lang
-        10. explicit
-        11. ep_count
-        12. categories
-    - Episode Fields
-        1. id(unique)
-        2. title
-        3. link
-        4. description
-        5. date_published
-        6. duration
-        7. explicit
-        8. episode
-        9. season
-        10. image
-        11. language?
-        12. Downloaded
-        13. File_path
+1. Clone this repo
+2. Install dependencies - `pip install flask requests pathvalidate`
+3. Create a file called `config.ini` in the project root directory
+4. Also create a file called `config.py`
+5. Run the app - `python server.py`
+6. Open `http://localhost:5000` in your browser
 
-# BUGS
+### `config.ini`
 
-- [x] Sanitize filename for the episode to be downloaded to exclude any characters that cannot be used in a file/dir name
+```ini
+[config]
+DOWNLOAD_DIR = D:/Path_where_to_store_downloaded_podcasts
+```
+### `config.py`
 
-# Features
+1. Create an account on [PodcastIndex](https://api.podcastindex.org/)
+2. Put your API_KEY and SECRET in this file as follows
+```py
+PODCASTINDEX_KEY = "YOUR-API-KEY"
+PODCASTINDEX_SECRET = "YOUR-SECRET"
+```
 
-- [ ] Auto downloader
-- [ ] File Management tool
-- [ ] Write metadata as ID3 tags on podcast mp3s
+The app may have bugs, and if you find any, feel free to open an issue or PR(after opening the issue)
